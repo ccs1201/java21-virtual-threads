@@ -36,17 +36,16 @@ public class PthreadController {
     @ResponseStatus(HttpStatus.OK)
     public CompletableFuture<BigInteger> forkjoin() {
         long count = countPlatform.incrementAndGet();
+        long start = System.currentTimeMillis();
 
         return CompletableFuture.supplyAsync(() -> {
-            long start = System.currentTimeMillis();
             var resultado = service.calcularFibo();
 
             var tempoTotal = System.currentTimeMillis() - start;
+            somaTempoPlatform.addAndGet(tempoTotal);
 
             log.info("Requisição forkjoin Nº" + count + " Tempo Total: " + tempoTotal + "/ms");
             log.info("");
-
-            somaTempoPlatform.addAndGet(tempoTotal);
 
             return resultado;
         }, ForkJoinPool.commonPool());
@@ -56,17 +55,17 @@ public class PthreadController {
     @ResponseStatus(HttpStatus.OK)
     public CompletableFuture<BigInteger> custom() {
         long count = countCustom.incrementAndGet();
+        long start = System.currentTimeMillis();
 
         return CompletableFuture.supplyAsync(() -> {
-            long start = System.currentTimeMillis();
             var resultado = service.calcularFibo();
 
             var tempoTotal = System.currentTimeMillis() - start;
 
+            somaTempoCustom.addAndGet(tempoTotal);
+
             log.info("Requisição Custom Nº" + count + " Tempo Total: " + tempoTotal + "/ms");
             log.info("");
-
-            somaTempoCustom.addAndGet(tempoTotal);
 
             return resultado;
         }, controllersExecutor);
@@ -76,10 +75,10 @@ public class PthreadController {
     @ResponseStatus(HttpStatus.OK)
     public void total() {
         if (somaTempoPlatform.get() > 0) {
-            log.info("Total Requisições forkjoin: " + countPlatform.get() + " Tempo Total: " + somaTempoPlatform.get() / 1000 + "/s Média: " + somaTempoPlatform.get() / countPlatform.get() + "/ms");
+            log.info("Total Requisições forkjoin: " + countPlatform.get() + " Tempo Total: " + somaTempoPlatform.get() + "/ms Média: " + somaTempoPlatform.get() / countPlatform.get() + "/ms");
         }
         if (somaTempoCustom.get() > 0) {
-            log.info("Total Requisições Custom: " + countCustom.get() + " Tempo Total: " + somaTempoCustom.get() / 1000 + "/s Média: " + somaTempoCustom.get() / countCustom.get() + "/ms");
+            log.info("Total Requisições Custom: " + countCustom.get() + " Tempo Total: " + somaTempoCustom.get() + "m/s Média: " + somaTempoCustom.get() / countCustom.get() + "/ms");
         }
         countPlatform.set(0);
         somaTempoPlatform.set(0);

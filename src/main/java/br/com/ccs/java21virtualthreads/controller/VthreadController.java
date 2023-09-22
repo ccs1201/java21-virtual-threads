@@ -29,17 +29,17 @@ public class VthreadController {
     @ResponseStatus(HttpStatus.OK)
     public CompletableFuture<BigInteger> virtual() {
         long count = countVirutal.incrementAndGet();
+        long start = System.currentTimeMillis();
 
         return CompletableFuture.supplyAsync(() -> {
-            long start = System.currentTimeMillis();
+
             var resultado = service.calcularFibo();
 
             var tempoTotal = System.currentTimeMillis() - start;
+            somaTempoVirtual.addAndGet(tempoTotal);
 
             log.info("Requisição Virtual Nº" + count + " Tempo Total: " + tempoTotal + "/ms");
             log.info("");
-
-            somaTempoVirtual.addAndGet(tempoTotal);
 
             return resultado;
         }, Executors.newVirtualThreadPerTaskExecutor());
@@ -49,7 +49,7 @@ public class VthreadController {
     @ResponseStatus(HttpStatus.OK)
     public void total() {
         if (countVirutal.get() > 0) {
-            log.info("Total Requisições Virtual: " + countVirutal.get() + " Tempo Total: " + somaTempoVirtual.get() / 1000 + "/s Média: " + somaTempoVirtual.get() / countVirutal.get() + "/ms");
+            log.info("Total Requisições Virtual: " + countVirutal.get() + " Tempo Total: " + somaTempoVirtual.get() + "/ms Média: " + somaTempoVirtual.get() / countVirutal.get() + "/ms");
         }
 
         countVirutal.set(0);
