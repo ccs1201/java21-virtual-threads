@@ -4,11 +4,10 @@ const session = new Httpx({
     baseURL: 'http://localhost:8080/api/test',
     timeout: 120000,
 });
-
 export const options = {
     vus: 500,
     iterations: 1000,
 };
 export default async function test () {
-    await session.asyncGet('/virtual');
+    await session.asyncGet('/forkjoin');
 }
