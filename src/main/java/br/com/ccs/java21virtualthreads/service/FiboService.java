@@ -9,12 +9,12 @@ public class FiboService {
 
     private static final int REPETICOES = 100_000;
 
-    public BigInteger calcularFibo() {
+    private BigInteger calcular(int repeticoes) {
 
         BigInteger resultado = BigInteger.valueOf(1);
         BigInteger antecessor = BigInteger.valueOf(0);
 
-        for (int i = 1; i < REPETICOES; i++) {
+        for (int i = 1; i < repeticoes; i++) {
 
             resultado = resultado.add(antecessor);
 
@@ -22,4 +22,13 @@ public class FiboService {
         }
         return resultado;
     }
+
+    public BigInteger calcularFibo() {
+        return this.calcular(REPETICOES);
+    }
+
+    public void calcularFibo(int repeticoes) {
+        calcular(repeticoes);
+    }
+
 }

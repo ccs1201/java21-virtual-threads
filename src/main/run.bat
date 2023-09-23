@@ -17,19 +17,19 @@ del *json
 @REM k6 run .\resources\test_scripts\total.js
 
 
-k6 run --summary-export platform.json .\resources\test_scripts\forkJoinBlocking.js
-timeout /t 10 /nobreak
-
-k6 run .\resources\test_scripts\totalBlocking.js
-timeout /t 3 /nobreak
-
-k6 run --summary-export virtual.json .\resources\test_scripts\virtualBlocking.js
-timeout /t 10 /nobreak
-
-k6 run .\resources\test_scripts\totalBlocking.js
-timeout /t 3 /nobreak
+@REM k6 run --summary-export platform.json .\resources\test_scripts\forkJoinBlocking.js
+@REM timeout /t 10 /nobreak
+@REM
+@REM k6 run .\resources\test_scripts\totalBlocking.js
+@REM timeout /t 3 /nobreak
+@REM
+@REM k6 run --summary-export virtual.json .\resources\test_scripts\virtualBlocking.js
+@REM timeout /t 3 /nobreak
+@REM
+@REM k6 run .\resources\test_scripts\totalBlocking.js
+@REM timeout /t 3 /nobreak
 
 k6 run --summary-export simultaneoBlocking.json .\resources\test_scripts\simultaneoBlocking.js
-timeout /t 10 /nobreak
+timeout /t 3 /nobreak
 
 k6 run .\resources\test_scripts\totalBlocking.js

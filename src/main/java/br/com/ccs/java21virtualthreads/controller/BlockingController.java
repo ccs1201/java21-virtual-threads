@@ -1,12 +1,12 @@
 package br.com.ccs.java21virtualthreads.controller;
 
+import br.com.ccs.java21virtualthreads.service.FiboService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
@@ -19,12 +19,17 @@ import static java.lang.Thread.sleep;
 @RequestMapping("/api/blocking")
 public class BlockingController {
 
+    private static final int REPETICOES = 10_000;
+    private final FiboService service;
     private final Logger log = Logger.getLogger(this.getClass().getSimpleName());
-
     private final AtomicLong countVirutal = new AtomicLong(0);
     private final AtomicLong sumVirtual = new AtomicLong(0);
     private final AtomicLong countForkjoin = new AtomicLong(0);
     private final AtomicLong sumForkJoin = new AtomicLong(0);
+
+    public BlockingController(FiboService service) {
+        this.service = service;
+    }
 
     @RequestMapping("/virtual")
     @ResponseStatus(HttpStatus.OK)
@@ -33,6 +38,9 @@ public class BlockingController {
         long start = System.currentTimeMillis();
 
         return CompletableFuture.runAsync(() -> {
+            String startThread = Thread.currentThread().toString();
+
+            service.calcularFibo(REPETICOES);
 
 //            log.info("Virtual Nº" + count + " Start: " + LocalDateTime.now());
             try {
@@ -43,7 +51,7 @@ public class BlockingController {
 
             var total = System.currentTimeMillis() - start;
 
-            log.info("Virtual Nº" + count + " End Total time: " + total);
+            log.info("Virtual Nº" + count + " Start at Thread -> [" + startThread + "] End at Thread -> [" + Thread.currentThread() + "] | Total time: " + total);
 
             sumVirtual.addAndGet(total);
         }, Executors.newVirtualThreadPerTaskExecutor());
@@ -56,8 +64,11 @@ public class BlockingController {
         long start = System.currentTimeMillis();
 
         return CompletableFuture.runAsync(() -> {
+            String startThread = Thread.currentThread().toString();
 
 //            log.info("ForkJoin Nº" + count + " Start: " + LocalDateTime.now());
+
+            service.calcularFibo(REPETICOES);
             try {
                 sleep(2000);
             } catch (InterruptedException e) {
@@ -65,7 +76,7 @@ public class BlockingController {
             }
             var total = System.currentTimeMillis() - start;
 
-            log.info("ForkJoin Nº" + count + " End: Total time: " + (System.currentTimeMillis() - start));
+            log.info("ForkJoin Nº" + count + " Start at Thread -> [" + startThread + "] End at Thread -> [" + Thread.currentThread() + "] | Total time: " + total);
 
             sumForkJoin.addAndGet(total);
         }, ForkJoinPool.commonPool());
